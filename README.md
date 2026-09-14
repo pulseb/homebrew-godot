@@ -25,15 +25,40 @@ godot
 
 ## Installation
 
-Once this formula is published in a Homebrew tap, users can install it with:
+Add the tap and install (the tap name stays `pulseb/godot-brew`; the GitHub
+repository is named `homebrew-godot` per Homebrew's tap convention):
 
 ```bash
-brew tap <tap-owner>/godot-brew
+brew tap pulseb/godot-brew https://github.com/pulseb/homebrew-godot
 brew install godot
 ```
 
-If the formula is eventually accepted into Homebrew core, the `brew tap` step
-will no longer be necessary.
+Homebrew 7+ may ask you to trust the tap first:
+
+```bash
+brew trust pulseb/godot-brew
+```
+
+## Automation
+
+A daily GitHub Actions workflow (`update-formula.yml`) checks the latest
+`4.x.y-stable` release from the [godotengine/godot](https://github.com/godotengine/godot)
+GitHub API, downloads the Linux x86_64/arm64 archives to compute their
+SHA-256 checksums, and pushes the updated formula to `main`. No self-hosted
+runner or server is needed — GitHub-hosted runners are free for public
+repositories. The workflow lives in `.github/workflows/` and can also be
+triggered manually via `workflow_dispatch`.
+
+The update script is [`scripts/update_formula.py`](scripts/update_formula.py)
+(Python 3.12+, standard library only); asset URLs use `#{version}`
+interpolation so only the `version` line and the two `sha256` lines ever
+change.
+
+## Architecture support
+
+The formula ships the official binaries for `x86_64` (Intel/AMD) and
+`arm64` (ARM) Linux. The `x86_32`/`arm32` and `.NET` (mono) variants are out
+of scope for now.
 
 ## Formula outline
 
@@ -85,12 +110,17 @@ Godot. Release automation should update the version, URLs, checksums, and
 
 ## Development
 
-Before opening a pull request, validate the formula with Homebrew:
+Validate changes locally before pushing:
 
 ```bash
-brew audit --strict --online Formula/godot.rb
-brew install --build-from-source Formula/godot.rb
+brew install --build-from-source Formula/godot.rb  # or via a local tap
 brew test godot
+```
+
+The update script can be run manually against a formula copy:
+
+```bash
+python3 scripts/update_formula.py /path/to/godot.rb
 ```
 
 The package should remain a binary distribution: building the full Godot

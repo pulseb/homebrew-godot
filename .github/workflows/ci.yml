@@ -1,0 +1,39 @@
+name: CI
+
+# Installs the formula from the checkout as a local tap and runs the
+# formula test block, mimicking the end-user flow.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Formula/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "Formula/**"
+      - ".github/workflows/ci.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        # Godot publishes Linux x86_64 and arm64 builds.
+        runs-on: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install formula from checkout
+        run: |
+          mkdir -p "$(brew --repository)/Library/Taps/pulseb"
+          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/pulseb/homebrew-godot"
+          brew trust pulseb/godot || true
+          brew install pulseb/godot/godot
+
+      - name: Run formula test block
+        run: brew test pulseb/godot/godot
+
+      - name: Smoke test
+        run: godot --version
