@@ -25,6 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Homebrew
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+          echo "/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+
       - name: Install formula from checkout
         run: |
           mkdir -p "$(brew --repository)/Library/Taps/pulseb"
