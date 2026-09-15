@@ -1,4 +1,4 @@
-class Godot3 < Formula
+class GodotAT3 < Formula
   desc "Free and open source 2D and 3D game engine (3.x LTS series)"
   homepage "https://godotengine.org/"
   version "3.6.3"
@@ -23,8 +23,8 @@ class Godot3 < Formula
   def caveats
     <<~EOS
       Godot 3.x is maintained for legacy projects only; new projects should
-      use godot4. This formula installs the binary as `godot3` so it can
-      coexist with the godot4 formula.
+      use the godot@4 formula. This formula installs the binary as `godot3`
+      so it can coexist with the godot@4 formula.
     EOS
   end
 

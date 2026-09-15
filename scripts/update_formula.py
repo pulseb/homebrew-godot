@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Update the Godot formulae to the latest stable release of each series.
 
-For each formula in Formula/ (godot4.rb tracks the 4.x series, godot3.rb the
+For each formula in Formula/ (godot@4.rb tracks the 4.x series, godot@3.rb the
 3.x series), fetches the latest matching stable release from the GitHub API,
 downloads the Linux archives to compute their SHA-256 checksums (GitHub does
 not publish checksum files for these assets), and rewrites the formula in

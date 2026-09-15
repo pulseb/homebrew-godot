@@ -1,4 +1,4 @@
-class Godot4 < Formula
+class GodotAT4 < Formula
   desc "Free and open source 2D and 3D game engine"
   homepage "https://godotengine.org/"
   version "4.7.2"

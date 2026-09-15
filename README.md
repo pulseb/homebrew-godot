@@ -4,22 +4,22 @@ Homebrew tap installing the latest stable Godot releases on Linux, for both
 the 4.x and 3.x series:
 
 ```bash
-brew install pulseb/godot/godot4   # latest 4.x, binary: godot4
-brew install pulseb/godot/godot3   # latest 3.x, binary: godot3
+brew install pulseb/godot/godot@4   # latest 4.x, binary: godot4
+brew install pulseb/godot/godot@3   # latest 3.x, binary: godot3
 ```
 
 After installation, launch the editor with:
 
 ```bash
-godot4    # or `godot`, an alias for godot4
+godot4    # or `godot`, an alias for godot@4
 godot3
 ```
 
 ## Scope
 
 - Linux only.
-- `godot4` tracks the latest stable Godot 4.x release through Homebrew's
-	`livecheck` mechanism; `godot3` tracks the 3.x series for legacy
+- `godot@4` tracks the latest stable Godot 4.x release through Homebrew's
+	`livecheck` mechanism; `godot@3` tracks the 3.x series for legacy
 	projects (maintained by the update script, see below).
 - Both the Godot editor and command-line executable are provided by each
 	installation; the binaries can coexist side by side.
@@ -28,7 +28,7 @@ godot3
 
 ```bash
 brew tap pulseb/godot
-brew install pulseb/godot/godot4   # and/or pulseb/godot/godot3
+brew install pulseb/godot/godot@4   # and/or pulseb/godot/godot@3
 ```
 
 The tap name is `pulseb/godot`: Homebrew derives it from the repository name
@@ -68,8 +68,8 @@ declares `x86_64`/`arm64` archives via `Hardware::CPU` conditionals with
 `#{version}` interpolated URLs, computes nothing at install time, and only
 the `version` line and the `sha256` values change between releases.
 
-See [`Formula/godot4.rb`](Formula/godot4.rb) and
-[`Formula/godot3.rb`](Formula/godot3.rb) for the actual formulae.
+See [`Formula/godot@4.rb`](Formula/godot@4.rb) and
+[`Formula/godot@3.rb`](Formula/godot@3.rb) for the actual formulae.
 
 ## Requirements
 
@@ -83,16 +83,16 @@ See [`Formula/godot4.rb`](Formula/godot4.rb) and
 Validate changes locally before pushing:
 
 ```bash
-brew install --build-from-source Formula/godot4.rb
-brew install --build-from-source Formula/godot3.rb
-brew test pulseb/godot/godot4
-brew test pulseb/godot/godot3
+brew install --build-from-source Formula/godot@4.rb
+brew install --build-from-source Formula/godot@3.rb
+brew test pulseb/godot/godot@4
+brew test pulseb/godot/godot@3
 ```
 
 The update script can be run manually against formula copies:
 
 ```bash
-python3 scripts/update_formula.py /path/to/godot4.rb /path/to/godot3.rb
+python3 scripts/update_formula.py '/path/to/godot@4.rb' '/path/to/godot@3.rb'
 ```
 
 The package should remain a binary distribution: building the full Godot
