@@ -20,11 +20,22 @@ import urllib.request
 from pathlib import Path
 
 REPO = "godotengine/godot"
-# on_intel block hosts the x86_64 asset, on_arm hosts the arm64 asset.
-ARCH_BY_BLOCK = {"intel": "x86_64", "arm": "arm64"}
+# The formula declares the x86_64 archive first, then arm64; each sha256 is
+# anchored on the url line above it so arch assignment never depends on order.
+ARCHES = ("x86_64", "arm64")
 TAG_RE = re.compile(r"^(\d+\.\d+\.\d+)-stable$")
 VERSION_RE = re.compile(r'version "[^"]+"')
-SHA_RE = r'(on_{block} do.*?sha256 )"[0-9a-f]+"'
+
+
+def sha256_re(arch: str) -> re.Pattern[str]:
+    """Match the sha256 line whose url line references the given archive arch.
+
+    The formula declares each archive as a url/sha256 pair; the pair is
+    anchored on the archive name so arch assignment never depends on order.
+    """
+    return re.compile(
+        rf'(url "[^"]*linux\.{arch}\.zip"\n\s*sha256 )"[0-9a-f]+"'
+    )
 
 
 def api_latest() -> dict:
@@ -47,14 +58,8 @@ def sha256_of(url: str) -> str:
 def update_formula(text: str, tag: str, hashes: dict[str, str]) -> str:
     version = tag.removesuffix("-stable")
     text = VERSION_RE.sub(f'version "{version}"', text)
-    for block, arch in ARCH_BY_BLOCK.items():
-        text = re.sub(
-            SHA_RE.format(block=block),
-            rf'\g<1>"{hashes[arch]}"',
-            text,
-            count=1,
-            flags=re.DOTALL,
-        )
+    for arch in ARCHES:
+        text = sha256_re(arch).sub(rf'\g<1>"{hashes[arch]}"', text)
     return text
 
 
@@ -77,7 +82,7 @@ def main() -> int:
     prefix = f"https://github.com/{REPO}/releases/download/{tag}"
     hashes = {
         arch: sha256_of(f"{prefix}/Godot_v{tag}_linux.{arch}.zip")
-        for arch in ARCH_BY_BLOCK.values()
+        for arch in ARCHES
     }
 
     formula.write_text(update_formula(text, tag, hashes))
