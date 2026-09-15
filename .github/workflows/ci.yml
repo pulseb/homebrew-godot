@@ -36,10 +36,16 @@ jobs:
           mkdir -p "$(brew --repository)/Library/Taps/pulseb"
           ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/pulseb/homebrew-godot"
           brew trust pulseb/godot || true
-          brew install pulseb/godot/godot
+          brew install pulseb/godot/godot4
+          brew install pulseb/godot/godot3
 
-      - name: Run formula test block
-        run: brew test pulseb/godot/godot
+      - name: Run formula test blocks
+        run: |
+          brew test pulseb/godot/godot4
+          brew test pulseb/godot/godot3
 
-      - name: Smoke test
-        run: godot --version
+      - name: Smoke tests
+        run: |
+          godot4 --version
+          godot3 --version
+          godot --version  # alias -> godot4

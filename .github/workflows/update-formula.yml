@@ -1,7 +1,8 @@
-name: Update formula
+name: Update formulae
 
-# Daily check for a new Godot stable release; updates Formula/godot.rb
-# (version + SHA-256) and pushes the change directly to main.
+# Daily check for new Godot stable releases; for each series (4.x, 3.x)
+# updates the matching formula (version + SHA-256) and pushes the change
+# directly to main.
 
 on:
   schedule:
@@ -21,18 +22,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update formula to latest Godot stable release
+      - name: Update formulae to latest Godot stable releases
         run: python3 scripts/update_formula.py
 
       - name: Commit and push if changed
         run: |
-          if [[ -n "$(git status --porcelain Formula/godot.rb)" ]]; then
+          if [[ -n "$(git status --porcelain Formula/)" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add Formula/godot.rb
-            version="$(sed -n 's/.*version "\([^"]*\)".*/\1/p' Formula/godot.rb | head -1)"
-            git commit -m "feat(formula): update godot to ${version}"
+            git add Formula/
+            git commit -m "feat(formula): update godot formulae to latest stable releases"
             git push
           else
-            echo "Formula already up to date; nothing to commit."
+            echo "Formulae already up to date; nothing to commit."
           fi

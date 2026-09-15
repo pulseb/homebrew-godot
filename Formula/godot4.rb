@@ -1,4 +1,4 @@
-class Godot < Formula
+class Godot4 < Formula
   desc "Free and open source 2D and 3D game engine"
   homepage "https://godotengine.org/"
   version "4.7.2"
@@ -19,7 +19,9 @@ class Godot < Formula
   end
 
   def install
-    bin.install Dir["Godot_v*-stable_linux.*"].first => "godot"
+    bin.install Dir["Godot_v*-stable_linux.*"].first => "godot4"
+    # Keep the historical `godot` command working alongside `godot4`.
+    bin.install_symlink "godot4" => "godot"
   end
 
   def caveats

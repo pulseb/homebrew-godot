@@ -1,33 +1,34 @@
 # homebrew-godot
 
-Homebrew tap installing the latest stable Godot 4 release on Linux.
-
-The goal is to make Godot available through the familiar Homebrew workflow:
+Homebrew tap installing the latest stable Godot releases on Linux, for both
+the 4.x and 3.x series:
 
 ```bash
-brew install pulseb/godot/godot
+brew install pulseb/godot/godot4   # latest 4.x, binary: godot4
+brew install pulseb/godot/godot3   # latest 3.x, binary: godot3
 ```
 
 After installation, launch the editor with:
 
 ```bash
-godot
+godot4    # or `godot`, an alias for godot4
+godot3
 ```
 
 ## Scope
 
-- Linux only for the first release.
-- Godot 4.x stable releases only.
-- The formula tracks the latest stable Godot 4 release through Homebrew's
-	`livecheck` mechanism.
-- Both the Godot editor and command-line executable are provided by the
-	installation.
+- Linux only.
+- `godot4` tracks the latest stable Godot 4.x release through Homebrew's
+	`livecheck` mechanism; `godot3` tracks the 3.x series for legacy
+	projects (maintained by the update script, see below).
+- Both the Godot editor and command-line executable are provided by each
+	installation; the binaries can coexist side by side.
 
 ## Installation
 
 ```bash
 brew tap pulseb/godot
-brew install pulseb/godot/godot
+brew install pulseb/godot/godot4   # and/or pulseb/godot/godot3
 ```
 
 The tap name is `pulseb/godot`: Homebrew derives it from the repository name
@@ -42,31 +43,33 @@ brew trust pulseb/godot
 ## Automation
 
 A daily GitHub Actions workflow (`.github/workflows/update-formula.yml`)
-checks the latest `4.x.y-stable` release from the
+checks the latest `x.y.z-stable` release of each series (4.x, 3.x) from the
 [godotengine/godot](https://github.com/godotengine/godot) GitHub API,
-downloads the Linux x86_64/arm64 archives to compute their SHA-256 checksums,
-and pushes the updated formula to `main`.
+downloads the Linux archives to compute their SHA-256 checksums, and pushes
+the updated formulae to `main`.
 
 The update script is [`scripts/update_formula.py`](scripts/update_formula.py)
 (Python 3.12+, standard library only); asset URLs use `#{version}`
-interpolation so only the `version` line and the two `sha256` lines ever
-change. The workflow runs on free GitHub-hosted runners and can also be
-triggered manually via `workflow_dispatch`.
+interpolation so only the `version` line and the `sha256` lines ever change.
+The workflow runs on free GitHub-hosted runners and can also be triggered
+manually via `workflow_dispatch`.
 
 ## Architecture support
 
-The formula ships the official binaries for `x86_64` (Intel/AMD) and
-`arm64` (ARM) Linux. The `x86_32`/`arm32` and `.NET` (mono) variants are out
-of scope for now.
+Both formulae ship the official binaries for `x86_64` (Intel/AMD) and
+`arm64` (ARM) Linux. The 32-bit and `.NET` (mono) variants are out of scope
+for now. Godot 3.x publishes a native `arm64` editor build; the x86_64
+formula uses the `x11.64` archive.
 
 ## Formula outline
 
-The formula installs the official Godot binaries (no build from source). It
-declares per-architecture `on_intel` / `on_arm` blocks with `#{version}`
-interpolated URLs, computes nothing at install time, and only the `version`
-line and the two `sha256` values change between releases.
+Each formula installs the official Godot binaries (no build from source). It
+declares `x86_64`/`arm64` archives via `Hardware::CPU` conditionals with
+`#{version}` interpolated URLs, computes nothing at install time, and only
+the `version` line and the `sha256` values change between releases.
 
-See [`Formula/godot.rb`](Formula/godot.rb) for the actual formula.
+See [`Formula/godot4.rb`](Formula/godot4.rb) and
+[`Formula/godot3.rb`](Formula/godot3.rb) for the actual formulae.
 
 ## Requirements
 
@@ -80,14 +83,16 @@ See [`Formula/godot.rb`](Formula/godot.rb) for the actual formula.
 Validate changes locally before pushing:
 
 ```bash
-brew install --build-from-source Formula/godot.rb
-brew test pulseb/godot/godot
+brew install --build-from-source Formula/godot4.rb
+brew install --build-from-source Formula/godot3.rb
+brew test pulseb/godot/godot4
+brew test pulseb/godot/godot3
 ```
 
-The update script can be run manually against a formula copy:
+The update script can be run manually against formula copies:
 
 ```bash
-python3 scripts/update_formula.py /path/to/godot.rb
+python3 scripts/update_formula.py /path/to/godot4.rb /path/to/godot3.rb
 ```
 
 The package should remain a binary distribution: building the full Godot
